@@ -1,0 +1,127 @@
+"""This is a Automation Script project """
+import time
+import csv
+import requests
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver import ActionChains
+from selenium.webdriver.support.select import Select
+
+driver = 1
+driver = webdriver.Firefox(
+    executable_path=r"C:\Users\91900\Downloads\geckodriver-v0.31.0-win64\geckodriver.exe")
+
+
+def test_loginzen():
+    """This function logs in to zen portal"""
+
+    url = "https://www.zenclass.in/login"
+    requests.get(url)
+    driver.get(url)
+    time.sleep(2)
+    driver.maximize_window()
+    driver.find_element(
+        by=By.XPATH,
+        value='//*[@id="root"]/div/div/div[1]/div[2]/div/div[1]/form/div[1]/div/input'
+    ).send_keys("duneixvi@gmail.com")
+    driver.find_element(
+        by=By.XPATH,
+        value='//*[@id="root"]/div/div/div[1]/div[2]/div/div[1]/form/div[2]/div/input'
+    ).send_keys("Qaz@1234")
+    login_button = driver.find_element(
+        by=By.XPATH,
+        value='//*[@id="root"]/div/div/div[1]/div[2]/div/div[1]/form/button')
+    time.sleep(3)
+    login_button.click()
+    time.sleep(3)
+    assert "class" in driver.current_url
+
+
+def test_fetch_details():
+    """This function Documents all the information from the left panel of guvi zen portal into a csv file"""
+    hover_over = driver.find_element(
+        by=By.XPATH, value='//*[@id="root"]/div[1]/nav/ul/div[1]/li/span/div/div[1]')
+    achains = ActionChains(driver)
+    achains.move_to_element(hover_over).perform()
+    xpath = '/html/body/div[1]/div[1]/nav/ul'
+    details = driver.find_element(by=By.XPATH, value=xpath)
+    export = details.text
+    str_1 = export
+    list_1 = str_1.split()
+    document = ['Document']
+    with open('new.csv', 'w', encoding="utf-8") as write_f:
+        write = csv.writer(write_f)
+        write.writerow(document)
+        write.writerow(list_1)
+
+
+def test_cancel_instancesolution():
+    """This function cancels instance solution to create a new query"""
+    hover_over_leftpanel = driver.find_element(
+        by=By.XPATH,
+        value='//*[@id="root"]/div[1]/nav/ul/div[1]/li/span/div/div[1]')
+    achains = ActionChains(driver)
+    achains.move_to_element(hover_over_leftpanel).perform()
+    click_query = driver.find_element(
+        by=By.XPATH,
+        value='//*[@id="root"]/div[1]/nav/ul/div[6]/li/span/div/div[2]')
+    click_query.click()
+    hover_over_away = driver.find_element(
+        by=By.XPATH, value='/html/body/div/div[2]/div/div[1]/div[2]/input')
+    achains = ActionChains(driver)
+    achains.move_to_element(hover_over_away).perform()
+
+
+def test_createquery():
+    """This function raises 5 queries"""
+    count = 0
+    while count < 5:
+        click_createquery = driver.find_element(
+            by=By.XPATH,
+            value='/html/body/div/div[2]/div/div[1]/div[1]/button')
+        click_createquery.click()
+        click_cancle = driver.find_element(
+            by=By.XPATH,
+            value=
+            '/html/body/div/div[2]/div/div[2]/div[6]/div[2]/div/div/section[3]/div[2]/button[1]')
+        click_cancle.click()
+        click_category = driver.find_element(
+            by=By.XPATH,
+            value='//*[@id="root"]/div[2]/div/div[2]/div/div/form/div[2]/div[1]/select')
+        click_category.click()
+        clikc_dd = Select(click_category)
+        clikc_dd.select_by_index(1)  # selecting zen-class Doubt
+        click_subcategory = driver.find_element(
+            by=By.XPATH,
+            value='/html/body/div/div[2]/div/div[2]/div/div/form/div[2]/div[2]/select')
+        click_subcategory.click()
+        clikc_dd = Select(click_subcategory)
+        clikc_dd.select_by_index(1)  # Selecting Task
+        language_1 = driver.find_element(
+            by=By.XPATH,
+            value='/html/body/div/div[2]/div/div[2]/div/div/form/div[2]/div[4]/select')
+        language_1.click()
+        clikc_dd = Select(language_1)
+        clikc_dd.select_by_index(1)  # Selecting Task
+        scroll = driver.find_element(
+            by=By.XPATH,
+            value='/html/body/div/div[2]/div/div[2]/div/div/form/div[2]/label[3]')
+        driver.execute_script("arguments[0].scrollIntoView();", scroll)
+        query_title = driver.find_element(
+            by=By.XPATH,
+            value='/html/body/div/div[2]/div/div[2]/div/div/form/div[5]/div/input')
+        query_title.send_keys("Guvi Python AT - 1&2 Automation Project")
+        query_description = driver.find_element(
+            by=By.XPATH,
+            value='/html/body/div/div[2]/div/div[2]/div/div/form/div[5]/textarea')
+        query_description.send_keys(
+            "This is a project Test Code Running for the Python Automation - "
+            "1&2 Project Given by mentor Mr. Suman Gangopadhyay")
+        click_create = driver.find_element(
+            by=By.XPATH,
+            value='/html/body/div/div[2]/div/div[2]/div/div/form/div[13]/div/button')
+        click_create.click()
+
+        time.sleep(3)
+        print(count)
+        count = count + 1
